@@ -43,7 +43,7 @@ bool Vertex::addNeighbor(Vertex neighbor)
 {
 	if (isInNeighbors(neighbor))
 		return false;
-	this->neighbors.emplace_back(neighbor);
+	neighbors.emplace_back(neighbor);
 	degree++;
 	return true;
 }

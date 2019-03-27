@@ -22,4 +22,5 @@ public:
 	std::vector<Vertex> revolveMaximumIndependentSet();
 	void generateAdjacencyMatrix();
 	void printAdjacencyMatrix();
+	bool adjacencyMatrixIsEmpty();
 };

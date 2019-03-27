@@ -109,27 +109,63 @@ void Graph::printAdjacencyMatrix()
 		cout << endl;
 	}
 }
-/*vector<Vertex> Graph::revolveMaximumIndependentSet()
+vector<Vertex> Graph::revolveMaximumIndependentSet()
 {
 	vector<Vertex> mwis = vector<Vertex>();
 	vector<Vertex> mwvc = vector<Vertex>();
 	generateAdjacencyMatrix();
-	int d;
-	while (edges.size() != 0)
+	int t;
+	int k = 0;
+	double max;
+	while (!adjacencyMatrixIsEmpty())
 	{
+		max = vertices[0].getRatio();
+		for (int i = 1; i < vertices.size(); i++)
+		{
+			if (max < vertices[i].getRatio())
+			{
+				max = vertices[i].getRatio();
+				t = i;
+				mwvc.emplace_back(vertices[i]);
+			}
+			if (max == vertices[i].getRatio() && vertices[i - k].getSupport() <= vertices[i].getSupport())
+			{
+				max = vertices[i - k].getRatio();
+				t = i - k;
+				mwvc.emplace_back(vertices[i - k]);
+			}
+			k++;
+		}
 		for (int i = 0; i < vertices.size(); i++)
 		{
-			for (int j = 0; j < vertices.size(); j++)
-			{
-				d = 0;
-			}
+			adjacencyMatrix[t][i] = 0;
+			adjacencyMatrix[i][t] = 0;
 		}
-	}
 
+	}
+	bool isInVertexCover = false;
 	for (int i = 0; i < vertices.size(); i++)
 	{
-		if (mwvc.find(vertices[i]) == mwvc.end())
+		for(int j=0; j < mwvc.size(); j++)
+		{
+			if(mwvc[i] == vertices[0])
+				isInVertexCover = true;
+		}
+		if (!isInVertexCover)
 			mwis.emplace_back(vertices[i]);
+		isInVertexCover = false;
 	}
 	return mwis;
-}*/
+}
+bool Graph::adjacencyMatrixIsEmpty()
+{
+	for (int i = 0; i < vertices.size(); i++)
+	{
+		for (int j = 0; j < vertices.size(); j++)
+		{
+			if (adjacencyMatrix[i][j] == 1)
+				return false;
+		}
+	}
+	return true;
+}
