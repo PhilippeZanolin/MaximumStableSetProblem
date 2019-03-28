@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "Graph.h"
 
-
 using namespace std;
 
 Graph::Graph()
@@ -107,6 +106,7 @@ void Graph::generateAdjacencyMatrix()
 }
 void Graph::printAdjacencyMatrix()
 {
+	cout << "---Adjency matrix---" << endl;
 	for (int i = 0; i < vertices.size(); i++)
 	{
 		for (int j = 0; j < vertices.size(); j++)
