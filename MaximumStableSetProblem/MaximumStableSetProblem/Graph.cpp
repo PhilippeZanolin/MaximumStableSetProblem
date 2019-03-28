@@ -9,6 +9,13 @@ Graph::Graph()
 }
 Graph::~Graph()
 {
+	int i;
+	for (i = 0; i < vertices.size(); i++) 
+	{
+		adjacencyMatrix[i] = nullptr;
+		delete(adjacencyMatrix[i]);
+	}
+	adjacencyMatrix = nullptr;
 }
 void Graph::addVertex(Vertex vertex)
 {
