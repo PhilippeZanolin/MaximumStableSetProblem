@@ -24,7 +24,8 @@ public:
 	bool exists(Edge edge);
 	void print();
 	std::vector<Vertex> revolveMaximumIndependentSetApproched();
-	
+	static std::vector<Vertex> revolveMaximumIndependentSetExact(Graph graph, std::vector<Vertex> currentSet);
+
 	void generateAdjacencyMatrix();
 	void printAdjacencyMatrix();
 	bool adjacencyMatrixIsEmpty();
@@ -32,4 +33,3 @@ public:
 	Vertex getMinimalDegreeVertex();
 };
 
-std::vector<Vertex> static revolveMaximumIndependentSetExact(Graph p, std::vector<Vertex> set);

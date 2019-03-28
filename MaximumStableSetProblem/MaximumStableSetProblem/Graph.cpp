@@ -175,6 +175,54 @@ vector<Vertex> Graph::revolveMaximumIndependentSetApproched()
 	}
 	return mwis;
 }
+
+std::vector<Vertex> Graph::revolveMaximumIndependentSetExact(Graph graph, std::vector<Vertex> currentSet)
+{
+
+	//On regarde si le graphe courant possède des sommets
+	if (!graph.isEmpty())
+	{
+		//On recupère le vertex de degree minimal
+		Vertex v = graph.getMinimalDegreeVertex();
+
+		//On initialise le set maximal a vide
+		vector<Vertex> maxSet = vector<Vertex>();
+
+		//On va parcourir tous les voisins du vertex du plus petit degré
+		int index;
+		for (index = 0; index < v.getNeighbors().size(); index++)
+		{
+
+			//Copie du sous graphe actuel 
+			Graph subGraph = Graph(graph);
+
+			//On doit retirer au nouveau graphe tous les voisins du voisin (propagation de l'aglo)
+			Vertex voisin = v.getNeighbors()[index];
+
+			int neigIndx;
+			for (neigIndx = 0; neigIndx < voisin.getNeighbors().size(); neigIndx++)
+			{
+				subGraph.RemoveVertex(voisin.getNeighbors()[neigIndx]);
+			}
+
+			//On ajoute au set le voisin
+			currentSet.push_back(voisin);
+			vector<Vertex> tempSet = revolveMaximumIndependentSetExact(subGraph, currentSet);
+
+			//On compare la cardinalite des 2 sets pour garder le maxium
+			if (tempSet.size() > maxSet.size())
+			{
+				maxSet = tempSet;
+			}
+		}
+
+		return maxSet;
+	}
+	else
+	{
+		return currentSet;
+	}
+}
 bool Graph::adjacencyMatrixIsEmpty()
 {
 	for (int i = 0; i < vertices.size(); i++)
@@ -205,50 +253,4 @@ Vertex Graph::getMinimalDegreeVertex()
 	return minD;
 }
 
-vector<Vertex> revolveMaximumIndependentSetExact(Graph graph, vector<Vertex> currentSet)
-{
 
-	//On regarde si le graphe courant possède des sommets
-	if (!graph.isEmpty()) 
-	{
-		//On recupère le vertex de degree minimal
-		Vertex v = graph.getMinimalDegreeVertex();
-
-		//On initialise le set maximal a vide
-		vector<Vertex> maxSet = vector<Vertex>();
-
-		//On va parcourir tous les voisins du vertex du plus petit degré
-		int index;
-		for (index = 0; index < v.getNeighbors().size(); index++) 
-		{
-
-			//Copie du sous graphe actuel 
-			Graph subGraph = Graph(graph);
-
-			//On doit retirer au nouveau graphe tous les voisins du voisin (propagation de l'aglo)
-			Vertex voisin = v.getNeighbors()[index];
-
-			int neigIndx;
-			for (neigIndx = 0; neigIndx < voisin.getNeighbors().size(); neigIndx++)
-			{
-				subGraph.RemoveVertex(voisin.getNeighbors()[neigIndx]);
-			}
-			
-			//On ajoute au set le voisin
-			currentSet.push_back(voisin);
-			vector<Vertex> tempSet = revolveMaximumIndependentSetExact(subGraph, currentSet);
-			
-			//On compare la cardinalite des 2 sets pour garder le maxium
-			if (tempSet.size() > maxSet.size()) 
-			{
-				maxSet = tempSet;
-			}
-		}
-
-		return maxSet;
-	}
-	else 
-	{
-		return currentSet;
-	}
-}
