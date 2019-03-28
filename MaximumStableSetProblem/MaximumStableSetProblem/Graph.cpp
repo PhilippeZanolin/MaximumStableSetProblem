@@ -20,6 +20,17 @@ void Graph::addVertex(Vertex vertex)
 {
 	vertices.push_back(vertex);
 }
+void Graph::RemoveVertex(Vertex vertex)
+{
+	int i;
+	for (i = 0; i < vertices.size(); i++) {
+		if (vertices[i] == vertex) 
+		{
+			vertices.erase(vertices.begin() + i);
+			return;
+		}
+	}
+}
 bool Graph::addEdge(Vertex *vertex1, Vertex *vertex2)
 {
 	Edge newEdge = Edge(*vertex1, *vertex2);
@@ -116,7 +127,7 @@ void Graph::printAdjacencyMatrix()
 		cout << endl;
 	}
 }
-vector<Vertex> Graph::revolveMaximumIndependentSet()
+vector<Vertex> Graph::revolveMaximumIndependentSetApproched()
 {
 	vector<Vertex> mwis = vector<Vertex>();
 	vector<Vertex> mwvc = vector<Vertex>();
@@ -175,4 +186,69 @@ bool Graph::adjacencyMatrixIsEmpty()
 		}
 	}
 	return true;
+}
+
+Vertex Graph::getMinimalDegreeVertex()
+{
+	if (vertices.size() == 0) 
+	{
+		return Vertex();
+	}
+	Vertex minD = vertices[0];
+	int i;
+	for (i = 1; i < vertices.size(); i++) 
+	{
+		if (vertices[i].getDegree() < minD.getDegree()) {
+			minD = vertices[i];
+		}
+	}
+	return minD;
+}
+
+vector<Vertex> revolveMaximumIndependentSetExact(Graph graph, vector<Vertex> currentSet)
+{
+
+	//On regarde si le graphe courant possède des sommets
+	if (!graph.isEmpty()) 
+	{
+		//On recupère le vertex de degree minimal
+		Vertex v = graph.getMinimalDegreeVertex();
+
+		//On initialise le set maximal a vide
+		vector<Vertex> maxSet = vector<Vertex>();
+
+		//On va parcourir tous les voisins du vertex du plus petit degré
+		int index;
+		for (index = 0; index < v.getNeighbors().size(); index++) 
+		{
+
+			//Copie du sous graphe actuel 
+			Graph subGraph = Graph(graph);
+
+			//On doit retirer au nouveau graphe tous les voisins du voisin (propagation de l'aglo)
+			Vertex voisin = v.getNeighbors()[index];
+
+			int neigIndx;
+			for (neigIndx = 0; neigIndx < voisin.getNeighbors().size(); neigIndx++)
+			{
+				subGraph.RemoveVertex(voisin.getNeighbors()[neigIndx]);
+			}
+			
+			//On ajoute au set le voisin
+			currentSet.push_back(voisin);
+			vector<Vertex> tempSet = revolveMaximumIndependentSetExact(subGraph, currentSet);
+			
+			//On compare la cardinalite des 2 sets pour garder le maxium
+			if (tempSet.size() > maxSet.size()) 
+			{
+				maxSet = tempSet;
+			}
+		}
+
+		return maxSet;
+	}
+	else 
+	{
+		return currentSet;
+	}
 }

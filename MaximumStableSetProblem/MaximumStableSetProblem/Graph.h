@@ -13,14 +13,23 @@ private:
 public:
 	Graph();
 	~Graph();
+
+	bool const isEmpty(){ return (vertices.size() == 0); }
+
 	void generateGraph(int n, int p, int rangeWeight);
 	void addVertex(Vertex vertex);
+	void RemoveVertex(Vertex vertex);
 	bool addEdge(Vertex* vertex1, Vertex* vertex2);
 	bool addEdge(Vertex* vertex1, Vertex* vertex2, double probability);
 	bool exists(Edge edge);
 	void print();
-	std::vector<Vertex> revolveMaximumIndependentSet();
+	std::vector<Vertex> revolveMaximumIndependentSetApproched();
+	
 	void generateAdjacencyMatrix();
 	void printAdjacencyMatrix();
 	bool adjacencyMatrixIsEmpty();
+
+	Vertex getMinimalDegreeVertex();
 };
+
+std::vector<Vertex> static revolveMaximumIndependentSetExact(Graph p, std::vector<Vertex> set);
