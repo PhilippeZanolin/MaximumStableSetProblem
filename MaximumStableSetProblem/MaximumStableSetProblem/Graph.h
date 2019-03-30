@@ -23,4 +23,5 @@ public:
 	void generateAdjacencyMatrix();
 	void printAdjacencyMatrix();
 	bool adjacencyMatrixIsEmpty();
+	int indexMaxRatio();
 };

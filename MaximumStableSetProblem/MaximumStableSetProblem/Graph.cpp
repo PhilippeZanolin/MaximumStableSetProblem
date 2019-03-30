@@ -73,7 +73,7 @@ void Graph::generateGraph(int n, int p, int rangeWeight)
 	{
 		for (int j = i + 1; j < vertices.size(); j++)
 		{
-			addEdge(&vertices[i], &vertices[j], 50);
+			addEdge(&vertices[i], &vertices[j], p);
 		}
 	}
 	adjacencyMatrix = new int*[vertices.size()];
@@ -114,41 +114,25 @@ vector<Vertex> Graph::revolveMaximumIndependentSet()
 	vector<Vertex> mwis = vector<Vertex>();
 	vector<Vertex> mwvc = vector<Vertex>();
 	generateAdjacencyMatrix();
-	int t;
-	int k = 0;
-	double max;
+	printAdjacencyMatrix();
+	int max;
 	while (!adjacencyMatrixIsEmpty())
 	{
-		max = vertices[0].getRatio();
-		for (int i = 1; i < vertices.size(); i++)
-		{
-			if (max < vertices[i].getRatio())
-			{
-				max = vertices[i].getRatio();
-				t = i;
-				mwvc.emplace_back(vertices[i]);
-			}
-			if (max == vertices[i].getRatio() && vertices[i - k].getSupport() <= vertices[i].getSupport())
-			{
-				max = vertices[i - k].getRatio();
-				t = i - k;
-				mwvc.emplace_back(vertices[i - k]);
-			}
-			k++;
-		}
+		max = indexMaxRatio();
+		mwvc.emplace_back(vertices[max]);
+		vertices.erase(vertices.begin() + max);
 		for (int i = 0; i < vertices.size(); i++)
 		{
-			adjacencyMatrix[t][i] = 0;
-			adjacencyMatrix[i][t] = 0;
+			adjacencyMatrix[max][i] = 0;
+			adjacencyMatrix[i][max] = 0;
 		}
-
 	}
 	bool isInVertexCover = false;
 	for (int i = 0; i < vertices.size(); i++)
 	{
 		for(int j=0; j < mwvc.size(); j++)
 		{
-			if(mwvc[i] == vertices[0])
+			if(mwvc[j] == vertices[i])
 				isInVertexCover = true;
 		}
 		if (!isInVertexCover)
@@ -168,4 +152,18 @@ bool Graph::adjacencyMatrixIsEmpty()
 		}
 	}
 	return true;
+}
+int Graph::indexMaxRatio()
+{
+	int indexMax = 0;
+	int ratio = vertices[0].getRatio();
+	for (int i = 1; i < vertices.size(); i++)
+	{
+		if (ratio < vertices[i].getRatio())
+		{
+			indexMax = i;
+			ratio = vertices[i].getRatio();
+		}
+	}
+	return indexMax;
 }
