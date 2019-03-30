@@ -132,7 +132,6 @@ vector<Vertex> Graph::revolveMaximumIndependentSetApproched()
 	vector<Vertex> mwis = vector<Vertex>();
 	vector<Vertex> mwvc = vector<Vertex>();
 	generateAdjacencyMatrix();
-	printAdjacencyMatrix();
 	int max;
 	while (!adjacencyMatrixIsEmpty())
 	{
