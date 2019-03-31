@@ -27,7 +27,7 @@ public:
 
 	void generateAdjacencyMatrix();
 	void printAdjacencyMatrix();
-	bool adjacencyMatrixIsEmpty();
+	bool adjacencyMatrixIsEmpty(int ** adjacencyCopy);
 	int indexMaxRatio();
 	Vertex getMinimalDegreeVertex();
 };

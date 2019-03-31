@@ -6,9 +6,7 @@ class Vertex
 private:
 	int index;
 	int degree;
-	int support;
 	double weight;
-	double ratio;
 	std::vector<Vertex> neighbors;
 
 public:

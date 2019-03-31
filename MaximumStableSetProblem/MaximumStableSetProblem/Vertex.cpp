@@ -7,6 +7,7 @@ Vertex::Vertex(int index, double weight)
 {
 	this->weight = weight;
 	this->index = index;
+	this->degree = 0;
 }
 
 Vertex::Vertex()

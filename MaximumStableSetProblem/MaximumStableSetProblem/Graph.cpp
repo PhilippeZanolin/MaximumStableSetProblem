@@ -132,17 +132,30 @@ vector<Vertex> Graph::revolveMaximumIndependentSetApproched()
 	vector<Vertex> mwis = vector<Vertex>();
 	vector<Vertex> mwvc = vector<Vertex>();
 	generateAdjacencyMatrix();
+	int ** adjacencyCopy;
+	adjacencyCopy = new int*[vertices.size()];
+	for (int i = 0; i < vertices.size(); i++)
+	{
+		adjacencyCopy[i] = new int[vertices.size()];
+	}
+	for (int i = 0; i < vertices.size(); i++)
+	{
+		for (int j = 0; j < vertices.size(); j++)
+		{
+			adjacencyCopy[i][j] = adjacencyMatrix[i][j];
+		}
+	}
 	int max;
 	
-	while (!adjacencyMatrixIsEmpty())
+	while (!adjacencyMatrixIsEmpty(adjacencyCopy))
 	{
 		max = indexMaxRatio();
 		mwvc.emplace_back(vertices[max]);
 		vertices.erase(vertices.begin() + max);
 		for (int i = 0; i < vertices.size(); i++)
 		{
-			adjacencyMatrix[max][i] = 0;
-			adjacencyMatrix[i][max] = 0;
+			adjacencyCopy[max][i] = 0;
+			adjacencyCopy[i][max] = 0;
 		}
 	}
 	bool isInVertexCover = false;
@@ -207,13 +220,13 @@ std::vector<Vertex> Graph::revolveMaximumIndependentSetExact(Graph graph, std::v
 		return currentSet;
 	}
 }
-bool Graph::adjacencyMatrixIsEmpty()
+bool Graph::adjacencyMatrixIsEmpty(int ** adjacencyCopy)
 {
 	for (int i = 0; i < vertices.size(); i++)
 	{
 		for (int j = 0; j < vertices.size(); j++)
 		{
-			if (adjacencyMatrix[i][j] == 1)
+			if (adjacencyCopy[i][j] == 1)
 				return false;
 		}
 	}
