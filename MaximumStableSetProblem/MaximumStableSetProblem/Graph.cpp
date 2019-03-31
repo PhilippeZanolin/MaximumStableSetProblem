@@ -20,16 +20,44 @@ void Graph::addVertex(Vertex vertex)
 {
 	vertices.push_back(vertex);
 }
-void Graph::RemoveVertex(Vertex vertex)
+void Graph::RemoveVertex(Vertex* vertex)
 {
 	int i;
 	for (i = 0; i < vertices.size(); i++) {
-		if (vertices[i] == vertex) 
+		for (int j = 0; j < vertices[i].getNeighbors().size(); j++)
 		{
-			vertices.erase(vertices.begin() + i);
-			return;
+			vector<Vertex> neighbors = vertices[i].getNeighbors();
+			if (*vertex == neighbors[j])
+				neighbors.erase(neighbors.begin() + j);
 		}
 	}
+	for (i = 0; i < vertices.size(); i++) {
+		if (vertices[i] == *vertex)
+		{
+			vertices.erase(vertices.begin() + i);
+		}
+	}
+	
+}
+void Graph::RemoveVertex(int index)
+{
+	int i;
+	vector<Vertex> neighbors;
+	for (i = 0; i < vertices.size(); i++) {
+		for (int j = 0; j < vertices[i].getNeighbors().size(); j++)
+		{
+			neighbors = vertices[i].getNeighbors();
+			if (index == neighbors[j].getIndex())
+				(vertices[i].neighbors).erase((vertices[i].neighbors).begin() + j);
+		}
+	}
+	for (i = 0; i < vertices.size(); i++) {
+		if (vertices[i].getIndex() == index)
+		{
+			vertices.erase(vertices.begin() + i);
+		}
+	}
+
 }
 bool Graph::addEdge(Vertex *vertex1, Vertex *vertex2)
 {
@@ -99,7 +127,7 @@ void Graph::generateGraph(int n, int p, int rangeWeight)
 		adjacencyMatrix[i]=  new int[vertices.size()];
 	}
 }
-void Graph::generateAdjacencyMatrix()
+void Graph::generateAdjacencyMatrix(vector<Vertex> vertices)
 {
 	int index;
 	for (int i = 0; i < vertices.size(); i++)
@@ -131,43 +159,46 @@ vector<Vertex> Graph::revolveMaximumIndependentSetApproched()
 {
 	vector<Vertex> mwis = vector<Vertex>();
 	vector<Vertex> mwvc = vector<Vertex>();
-	generateAdjacencyMatrix();
+	vector<Vertex> verticesCopy;
+	for (int i = 0; i < vertices.size(); i++)
+		verticesCopy.emplace_back(vertices[i]);
+	generateAdjacencyMatrix(verticesCopy);
 	int ** adjacencyCopy;
-	adjacencyCopy = new int*[vertices.size()];
-	for (int i = 0; i < vertices.size(); i++)
+	adjacencyCopy = new int*[verticesCopy.size()];
+	for (int i = 0; i < verticesCopy.size(); i++)
 	{
-		adjacencyCopy[i] = new int[vertices.size()];
+		adjacencyCopy[i] = new int[verticesCopy.size()];
 	}
-	for (int i = 0; i < vertices.size(); i++)
+	for (int i = 0; i < verticesCopy.size(); i++)
 	{
-		for (int j = 0; j < vertices.size(); j++)
+		for (int j = 0; j < verticesCopy.size(); j++)
 		{
 			adjacencyCopy[i][j] = adjacencyMatrix[i][j];
 		}
 	}
 	int max;
 	
-	while (!adjacencyMatrixIsEmpty(adjacencyCopy))
+	while (!adjacencyMatrixIsEmpty(adjacencyCopy, verticesCopy))
 	{
-		max = indexMaxRatio();
-		mwvc.emplace_back(vertices[max]);
-		vertices.erase(vertices.begin() + max);
-		for (int i = 0; i < vertices.size(); i++)
+		max = indexMaxRatio(verticesCopy);
+		mwvc.emplace_back(verticesCopy[max]);
+		verticesCopy.erase(verticesCopy.begin() + max);
+		for (int i = 0; i < verticesCopy.size(); i++)
 		{
 			adjacencyCopy[max][i] = 0;
 			adjacencyCopy[i][max] = 0;
 		}
 	}
 	bool isInVertexCover = false;
-	for (int i = 0; i < vertices.size(); i++)
+	for (int i = 0; i < verticesCopy.size(); i++)
 	{
 		for(int j=0; j < mwvc.size(); j++)
 		{
-			if(mwvc[j] == vertices[i])
+			if(mwvc[j] == verticesCopy[i])
 				isInVertexCover = true;
 		}
 		if (!isInVertexCover)
-			mwis.emplace_back(vertices[i]);
+			mwis.emplace_back(verticesCopy[i]);
 		isInVertexCover = false;
 	}
 	return mwis;
@@ -180,8 +211,9 @@ std::vector<Vertex> Graph::revolveMaximumIndependentSetExact(Graph graph, std::v
 	if (!graph.isEmpty())
 	{
 		//On recupère le vertex de degree minimal
-		Vertex v = graph.getMinimalDegreeVertex();
-
+		//Vertex v = graph.getMinimalDegreeVertex();
+		int indexMin = graph.getMinimalDegreeIndex();
+		Vertex v = graph.vertices[indexMin];
 		//On initialise le set maximal a vide
 		vector<Vertex> maxSet = vector<Vertex>();
 
@@ -192,19 +224,27 @@ std::vector<Vertex> Graph::revolveMaximumIndependentSetExact(Graph graph, std::v
 
 			//Copie du sous graphe actuel 
 			Graph subGraph = Graph(graph);
+			//subGraph.print();
 
 			//On doit retirer au nouveau graphe tous les voisins du voisin (propagation de l'aglo)
-			Vertex voisin = v.getNeighbors()[index];
+			int voisinIndex = graph.getIndex(v.getNeighbors()[index].getIndex(), graph);
+			Vertex voisin = Vertex();
+			if (voisinIndex != -1)
+			{
+				voisin = graph.vertices[voisinIndex];
+			}
 
 			int neigIndx;
 			for (neigIndx = 0; neigIndx < voisin.getNeighbors().size(); neigIndx++)
 			{
-				subGraph.RemoveVertex(voisin.getNeighbors()[neigIndx]);
+				subGraph.RemoveVertex(voisin.getNeighbors()[neigIndx].getIndex());
 			}
 
 			//On ajoute au set le voisin
-			currentSet.push_back(voisin);
-			vector<Vertex> tempSet = revolveMaximumIndependentSetExact(subGraph, currentSet);
+			vector<Vertex> currentSetCopy = vector<Vertex>(currentSet);
+			currentSetCopy.push_back(voisin);
+			subGraph.RemoveVertex(voisin.getIndex());
+			vector<Vertex> tempSet = revolveMaximumIndependentSetExact(subGraph, currentSetCopy);
 
 			//On compare la cardinalite des 2 sets pour garder le maxium
 			if (tempSet.size() > maxSet.size())
@@ -220,11 +260,11 @@ std::vector<Vertex> Graph::revolveMaximumIndependentSetExact(Graph graph, std::v
 		return currentSet;
 	}
 }
-bool Graph::adjacencyMatrixIsEmpty(int ** adjacencyCopy)
+bool Graph::adjacencyMatrixIsEmpty(int ** adjacencyCopy, vector<Vertex> verticesCopy)
 {
-	for (int i = 0; i < vertices.size(); i++)
+	for (int i = 0; i < verticesCopy.size(); i++)
 	{
-		for (int j = 0; j < vertices.size(); j++)
+		for (int j = 0; j < verticesCopy.size(); j++)
 		{
 			if (adjacencyCopy[i][j] == 1)
 				return false;
@@ -232,21 +272,28 @@ bool Graph::adjacencyMatrixIsEmpty(int ** adjacencyCopy)
 	}
 	return true;
 }
-int Graph::indexMaxRatio()
+int Graph::indexMaxRatio(vector<Vertex> verticesCopy)
 {
 	int indexMax = 0;
-	int ratio = vertices[0].getRatio();
-	for (int i = 1; i < vertices.size(); i++)
+	int ratio = verticesCopy[0].getRatio();
+	for (int i = 1; i < verticesCopy.size(); i++)
 	{
-		if (ratio < vertices[i].getRatio())
+		if (ratio < verticesCopy[i].getRatio())
 		{
 			indexMax = i;
-			ratio = vertices[i].getRatio();
+			ratio = verticesCopy[i].getRatio();
 		}
 	}
 	return indexMax;
 }
-
+int Graph::getIndex(int index, Graph graph)
+{
+	int indexVertex = -1;
+	for (int i = 0; i < graph.vertices.size(); i++)
+		if (vertices[i].getIndex() == index)
+			indexVertex = i;
+	return indexVertex;
+}
 Vertex Graph::getMinimalDegreeVertex()
 {
 	if (vertices.size() == 0) 
@@ -259,6 +306,22 @@ Vertex Graph::getMinimalDegreeVertex()
 	{
 		if (vertices[i].getDegree() < minD.getDegree()) {
 			minD = vertices[i];
+		}
+	}
+	return minD;
+}
+int Graph::getMinimalDegreeIndex()
+{
+	if (vertices.size() == 0)
+	{
+		return -1;
+	}
+	int minD = 0;
+	int i;
+	for (i = 1; i < vertices.size(); i++)
+	{
+		if (vertices[i].getDegree() < vertices[minD].getDegree()) {
+			minD = i;
 		}
 	}
 	return minD;

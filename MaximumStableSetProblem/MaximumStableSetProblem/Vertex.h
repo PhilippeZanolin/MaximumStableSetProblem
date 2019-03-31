@@ -7,9 +7,9 @@ private:
 	int index;
 	int degree;
 	double weight;
-	std::vector<Vertex> neighbors;
 
 public:
+	std::vector<Vertex> neighbors;
 	Vertex(int index, double weight);
 	Vertex();
 	~Vertex();
