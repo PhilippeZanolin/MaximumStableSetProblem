@@ -105,14 +105,14 @@ void Graph::print()
 		cout << "Pont entre les sommets " << edges[i].getVertices()[0].getIndex() << " et " << edges[i].getVertices()[1].getIndex() << endl;
 	}
 }
-void Graph::generateGraph(int n, int p, int rangeWeight)
+void Graph::generateGraph(int n, int p, int index)
 {
+	srand(index);
 	double weight;
 	Vertex newVertex;
 	for (int i = 0; i < n; i++)
 	{
-		srand(time(NULL));
-		weight = rand() % rangeWeight + 1;
+		weight = 1;
 		newVertex = Vertex(i, weight);
 		vertices.emplace_back(newVertex);
 	}

@@ -15,7 +15,7 @@ public:
 	~Graph();
 
 	bool const isEmpty(){ return (vertices.size() == 0); }
-	void generateGraph(int n, int p, int rangeWeight);
+	void generateGraph(int n, int p, int index);
 	void addVertex(Vertex vertex);
 	void RemoveVertex(Vertex* vertex);
 	void RemoveVertex(int index);
