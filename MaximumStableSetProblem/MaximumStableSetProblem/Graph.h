@@ -7,14 +7,17 @@
 class Graph
 {
 private:
+	int index;
 	std::vector<Vertex> vertices;
 	std::vector<Edge> edges;
 	int** adjacencyMatrix;
 public:
 	Graph();
+	Graph(int index);
 	~Graph();
 
 	bool const isEmpty(){ return (vertices.size() == 0); }
+	int getIndex() { return index; }
 	void generateGraph(int n, int p, int index);
 	void addVertex(Vertex vertex);
 	void RemoveVertex(Vertex* vertex);
@@ -33,5 +36,6 @@ public:
 	Vertex getMinimalDegreeVertex();
 	int getMinimalDegreeIndex();
 	int getIndex(int index, Graph graph);
+	bool isValid(std::vector<Vertex> solution);
 };
 

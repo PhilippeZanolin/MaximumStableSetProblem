@@ -7,6 +7,10 @@ using namespace std;
 Graph::Graph()
 {
 }
+Graph::Graph(int index)
+{
+	this->index = index;
+}
 Graph::~Graph()
 {
 	int i;
@@ -93,6 +97,19 @@ bool Graph::exists(Edge edge)
 			return true;
 	}
 	return false;
+}
+bool Graph::isValid(vector<Vertex> solution)
+{
+	for (int i = 0; i < solution.size() - 1; i++)
+	{
+		for (int j = i+1; j < solution.size(); j++)
+		{
+			if (exists(Edge(solution[i], solution[j])))
+				return false;
+
+		}
+	}
+	return true;
 }
 void Graph::print()
 {
