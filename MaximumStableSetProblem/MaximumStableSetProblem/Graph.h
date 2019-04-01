@@ -23,8 +23,8 @@ public:
 	bool addEdge(Vertex* vertex1, Vertex* vertex2, double probability);
 	bool exists(Edge edge);
 	void print();
-	std::vector<Vertex> revolveMaximumIndependentSetApproched();
-	static std::vector<Vertex> revolveMaximumIndependentSetExact(Graph graph, std::vector<Vertex> currentSet);
+	std::vector<Vertex> resolveMaximumIndependentSetApproched();
+	static std::vector<Vertex> resolveMaximumIndependentSetExact(Graph graph, std::vector<Vertex> currentSet);
 
 	void generateAdjacencyMatrix(std::vector<Vertex> vertices);
 	void printAdjacencyMatrix();

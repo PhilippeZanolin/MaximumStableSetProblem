@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Graph.h"
+#include <time.h> 
 
 using namespace std;
 
@@ -110,6 +111,7 @@ void Graph::generateGraph(int n, int p, int rangeWeight)
 	Vertex newVertex;
 	for (int i = 0; i < n; i++)
 	{
+		srand(time(NULL));
 		weight = rand() % rangeWeight + 1;
 		newVertex = Vertex(i, weight);
 		vertices.emplace_back(newVertex);
@@ -127,18 +129,18 @@ void Graph::generateGraph(int n, int p, int rangeWeight)
 		adjacencyMatrix[i]=  new int[vertices.size()];
 	}
 }
-void Graph::generateAdjacencyMatrix(vector<Vertex> vertices)
+void Graph::generateAdjacencyMatrix(vector<Vertex> verticesCopy)
 {
 	int index;
-	for (int i = 0; i < vertices.size(); i++)
+	for (int i = 0; i < verticesCopy.size(); i++)
 	{
-		for (int k = 0; k < vertices.size(); k++)
+		for (int k = 0; k < verticesCopy.size(); k++)
 		{
 			adjacencyMatrix[i][k] = 0;
 		}
-		for (int j = 0; j < vertices[i].getNeighbors().size(); j++)
+		for (int j = 0; j < verticesCopy[i].getNeighbors().size(); j++)
 		{
-			index = vertices[i].getNeighbors()[j].getIndex();
+			index = verticesCopy[i].getNeighbors()[j].getIndex();
 			adjacencyMatrix[i][index] = 1;
 		}
 	}
@@ -155,7 +157,7 @@ void Graph::printAdjacencyMatrix()
 		cout << endl;
 	}
 }
-vector<Vertex> Graph::revolveMaximumIndependentSetApproched()
+vector<Vertex> Graph::resolveMaximumIndependentSetApproched()
 {
 	vector<Vertex> mwis = vector<Vertex>();
 	vector<Vertex> mwvc = vector<Vertex>();
@@ -204,7 +206,7 @@ vector<Vertex> Graph::revolveMaximumIndependentSetApproched()
 	return mwis;
 }
 
-std::vector<Vertex> Graph::revolveMaximumIndependentSetExact(Graph graph, std::vector<Vertex> currentSet)
+std::vector<Vertex> Graph::resolveMaximumIndependentSetExact(Graph graph, std::vector<Vertex> currentSet)
 {
 
 	//On regarde si le graphe courant possède des sommets
@@ -212,14 +214,15 @@ std::vector<Vertex> Graph::revolveMaximumIndependentSetExact(Graph graph, std::v
 	{
 		//On recupère le vertex de degree minimal
 		//Vertex v = graph.getMinimalDegreeVertex();
-		int indexMin = graph.getMinimalDegreeIndex();
-		Vertex v = graph.vertices[indexMin];
+		//int indexMin = graph.getMinimalDegreeIndex();
+		//Vertex v = graph.vertices[indexMin];
+
 		//On initialise le set maximal a vide
 		vector<Vertex> maxSet = vector<Vertex>();
 
 		//On va parcourir tous les voisins du vertex du plus petit degré
 		int index;
-		for (index = 0; index < v.getNeighbors().size(); index++)
+		for (index = 0; index < graph.vertices.size(); index++)
 		{
 
 			//Copie du sous graphe actuel 
@@ -227,24 +230,26 @@ std::vector<Vertex> Graph::revolveMaximumIndependentSetExact(Graph graph, std::v
 			//subGraph.print();
 
 			//On doit retirer au nouveau graphe tous les voisins du voisin (propagation de l'aglo)
-			int voisinIndex = graph.getIndex(v.getNeighbors()[index].getIndex(), graph);
+			/*int voisinIndex = graph.getIndex(v.getNeighbors()[index].getIndex(), graph);
 			Vertex voisin = Vertex();
 			if (voisinIndex != -1)
 			{
 				voisin = graph.vertices[voisinIndex];
-			}
-
+			}*/
+			Vertex voisin = graph.vertices[index];
 			int neigIndx;
 			for (neigIndx = 0; neigIndx < voisin.getNeighbors().size(); neigIndx++)
 			{
 				subGraph.RemoveVertex(voisin.getNeighbors()[neigIndx].getIndex());
+				//cout << "vertex retire : " << voisin.getNeighbors()[neigIndx].getIndex()<<endl;
 			}
 
 			//On ajoute au set le voisin
 			vector<Vertex> currentSetCopy = vector<Vertex>(currentSet);
 			currentSetCopy.push_back(voisin);
+			//cout << "index voisin : " << voisin.getIndex()<<endl;
 			subGraph.RemoveVertex(voisin.getIndex());
-			vector<Vertex> tempSet = revolveMaximumIndependentSetExact(subGraph, currentSetCopy);
+			vector<Vertex> tempSet = resolveMaximumIndependentSetExact(subGraph, currentSetCopy);
 
 			//On compare la cardinalite des 2 sets pour garder le maxium
 			if (tempSet.size() > maxSet.size())
