@@ -176,9 +176,11 @@ void Graph::printAdjacencyMatrix()
 }
 vector<Vertex> Graph::resolveMaximumIndependentSetApproched()
 {
-	vector<Vertex> mwis = vector<Vertex>();
-	vector<Vertex> mwvc = vector<Vertex>();
-	vector<Vertex> verticesCopy;
+	vector<Vertex> mwis = vector<Vertex>();// Maximum Weighted Independent Stable
+	vector<Vertex> mwvc = vector<Vertex>(); // Maximum Weighted Vectex Cover
+	// On effectue une copie de la liste de sommets du graphe afin de ne pas la modifier
+	// Pour l'utiliser plus tard avec la méthode de résolution exacte
+	vector<Vertex> verticesCopy; 
 	for (int i = 0; i < vertices.size(); i++)
 		verticesCopy.emplace_back(vertices[i]);
 	generateAdjacencyMatrix(verticesCopy);
@@ -196,19 +198,26 @@ vector<Vertex> Graph::resolveMaximumIndependentSetApproched()
 		}
 	}
 	int max;
-	
+	// On cherche la couverture minimum du graphe
+	// On répète l'opération tant que la matrice d'adjacence n'est pas vide
 	while (!adjacencyMatrixIsEmpty(adjacencyCopy, verticesCopy))
 	{
+		// On récupère à chaque fois le sommet au ratio le plus élevé, qu'on ajoute a la couverture minimum
 		max = indexMaxRatio(verticesCopy);
 		mwvc.emplace_back(verticesCopy[max]);
-		verticesCopy.erase(verticesCopy.begin() + max);
+		// On supprime le sommet ajouté à la couverture minimum de la liste de sommets du graphe
+		verticesCopy.erase(verticesCopy.begin() + max); 
 		for (int i = 0; i < verticesCopy.size(); i++)
 		{
+			// On met a jour la matrice d'adjacence en en retirant le sommet
+			// qu'on vient d'ajouter à la couverture minimum
 			adjacencyCopy[max][i] = 0;
 			adjacencyCopy[i][max] = 0;
 		}
 	}
 	bool isInVertexCover = false;
+	// On ajoute au stable tous les sommets n'étant pas
+	// inclus dans la couverture minimum du graphe
 	for (int i = 0; i < verticesCopy.size(); i++)
 	{
 		for(int j=0; j < mwvc.size(); j++)
