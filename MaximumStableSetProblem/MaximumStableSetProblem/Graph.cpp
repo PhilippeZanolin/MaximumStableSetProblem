@@ -225,47 +225,34 @@ vector<Vertex> Graph::resolveMaximumIndependentSetApproched()
 
 std::vector<Vertex> Graph::resolveMaximumIndependentSetExact(Graph graph, std::vector<Vertex> currentSet)
 {
-
-	//On regarde si le graphe courant possède des sommets
+	//On regarde si le graphe courant possÃ¨de des sommets
 	if (!graph.isEmpty())
 	{
-		//On recupère le vertex de degree minimal
-		//Vertex v = graph.getMinimalDegreeVertex();
-		//int indexMin = graph.getMinimalDegreeIndex();
-		//Vertex v = graph.vertices[indexMin];
-
 		//On initialise le set maximal a vide
 		vector<Vertex> maxSet = vector<Vertex>();
 
-		//On va parcourir tous les voisins du vertex du plus petit degré
+		//On va parcourir tous les sommets du graphe
 		int index;
 		for (index = 0; index < graph.vertices.size(); index++)
 		{
-
 			//Copie du sous graphe actuel 
 			Graph subGraph = Graph(graph);
-			//subGraph.print();
-
-			//On doit retirer au nouveau graphe tous les voisins du voisin (propagation de l'aglo)
-			/*int voisinIndex = graph.getIndex(v.getNeighbors()[index].getIndex(), graph);
-			Vertex voisin = Vertex();
-			if (voisinIndex != -1)
-			{
-				voisin = graph.vertices[voisinIndex];
-			}*/
-			Vertex voisin = graph.vertices[index];
+			
+			Vertex currentVertex = graph.vertices[index];
 			int neigIndx;
-			for (neigIndx = 0; neigIndx < voisin.getNeighbors().size(); neigIndx++)
+
+			//On doit retirer au nouveau graphe tous les voisins du sommets
+			for (neigIndx = 0; neigIndx < currentVertex.getNeighbors().size(); neigIndx++)
 			{
-				subGraph.RemoveVertex(voisin.getNeighbors()[neigIndx].getIndex());
-				//cout << "vertex retire : " << voisin.getNeighbors()[neigIndx].getIndex()<<endl;
+				subGraph.RemoveVertex(currentVertex.getNeighbors()[neigIndx].getIndex());
 			}
 
-			//On ajoute au set le voisin
+			//On ajoute au set le sommet
 			vector<Vertex> currentSetCopy = vector<Vertex>(currentSet);
-			currentSetCopy.push_back(voisin);
-			//cout << "index voisin : " << voisin.getIndex()<<endl;
-			subGraph.RemoveVertex(voisin.getIndex());
+			currentSetCopy.push_back(currentVertex);
+			//on supprime le sommet
+			subGraph.RemoveVertex(currentVertex.getIndex());
+			//on rappel la fonction avec le nouveau graphe
 			vector<Vertex> tempSet = resolveMaximumIndependentSetExact(subGraph, currentSetCopy);
 
 			//On compare la cardinalite des 2 sets pour garder le maxium
